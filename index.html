@@ -20,16 +20,22 @@
     <div id="output">AI response will appear here...</div>
 
     <script>
+        // Your token has been placed directly into the variable below
+        const AI_TOKEN = "AQ.Ab8RN6L0VKL2Ka35iwGC46SMCXNZpJN6rbIswlt5mw7g--9ofw";
+
         async function queryAI() {
             const input = document.getElementById('userInput').value;
             const outputDiv = document.getElementById('output');
             outputDiv.innerText = "Thinking...";
 
             try {
-                // Connecting to a free open-source model tier hosted via Hugging Face
+                // Connecting to the model interface using your provided token
                 const response = await fetch("https://huggingface.co", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${AI_TOKEN}`
+                    },
                     body: JSON.stringify({ inputs: input })
                 });
 
@@ -39,8 +45,11 @@
                     outputDiv.innerText = data[0].generated_text;
                 } else if (data && data.generated_text) {
                     outputDiv.innerText = data.generated_text;
+                } else if (data && data.error) {
+                    outputDiv.innerText = "API Error: " + data.error;
                 } else {
-                    outputDiv.innerText = "Error parsing response or model is loading. Try again in a moment.";
+                    outputDiv.innerText = "Response received but could not be parsed. Check developer console.";
+                    console.log(data);
                 }
             } catch (error) {
                 outputDiv.innerText = "Error: " + error.message;
